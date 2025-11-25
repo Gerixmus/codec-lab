@@ -9,21 +9,22 @@ qp = 63
 preset = "fast" 
 # qp = 24
 # preset = "medium"
-input_file = "input/3.mp4"
+input_file = "input/6.mp4"
 csv_path = "output/results.csv"
+file_name = filename = os.path.basename(input_file)
 
-base, ext = os.path.splitext(input_file)
-vmaf_json = f"vmaf-{base}-out-qp{qp}-preset{preset}.json"
-output_file = f"{base}-out-qp{qp}-preset{preset}{ext}"
+base, ext = os.path.splitext(file_name)
+vmaf_json = f"output/vmaf-{base}-out-qp{qp}-preset{preset}.json"
+output_file = f"output/{base}-out-qp{qp}-preset{preset}{ext}"
 
 subprocess.run([
     "ffmpeg", "-y",
     "-i", input_file,
     "-t", "5",
     "-c", "copy",
-    f"{base}-trim{ext}"
+    f"output/{base}-trim{ext}"
 ])
-input_file = f"{base}-trim{ext}"
+input_file = f"output/{base}-trim{ext}"
 
 cmd = [
     "ffmpeg",
@@ -71,7 +72,6 @@ print("VMAF:", vmaf_mean)
 
 header = [
     "input_file",
-    "output_file",
     "encoder",
     "qp",
     "preset",
@@ -81,7 +81,7 @@ header = [
 ]
 
 row = [
-    input_file,
+    file_name,
     "libvvenc",
     qp,
     preset,
