@@ -5,14 +5,14 @@ import os
 import json
 import csv
 
-qp = 63
-preset = "fast" 
-# qp = 24
-# preset = "medium"
-input_file = "input/6.mp4"
+# qp = 63
+# preset = "faster" 
+qp = 24
+preset = "medium"
+input_file = "input/3.mp4"
 csv_path = "output/results.csv"
 file_name = filename = os.path.basename(input_file)
-
+#TODO generate output folder 
 base, ext = os.path.splitext(file_name)
 vmaf_json = f"output/vmaf-{base}-out-qp{qp}-preset{preset}.json"
 output_file = f"output/{base}-out-qp{qp}-preset{preset}{ext}"
