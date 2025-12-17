@@ -6,40 +6,24 @@ import json
 import csv
 
 
-# files = os.listdir("input")
+files = os.listdir("input")
 settings = {
-  "faster": 63,
-  "fast": 48,
-  "medium": 32,
-  "slow": 16,
-  "slower": 0
+    "slower": 0,
+    "slow": 1,
+    "medium": 3,
+    "fast": 5,
+    "faster": 8 
 }
 
-# for i in files:
-for preset, qp in settings.items():
-    # qp = 63
-    # preset = "faster" 
-
-    # qp = 24
-    # preset = "medium"
-    input_file = "input/4.mp4"
-    # input_file = f"input/{i}"
+for i in files:
+    preset = "medium"
+    crf = 10
+    input_file = f"input/{i}"
     csv_path = "output/results-coverage.csv"
     file_name = os.path.basename(input_file)
-    #TODO generate output folder 
     base, ext = os.path.splitext(file_name)
-    vmaf_json = f"output/vmaf-{base}-out-qp{qp}-preset{preset}.json"
-    output_file = f"output/{base}-out-qp{qp}-preset{preset}.mkv"
-    
-    # trims to 5 seconds and sets input to the trimmed file
-    # subprocess.run([
-    #     "ffmpeg", "-y",
-    #     "-i", input_file,
-    #     "-t", "5",
-    #     "-c", "copy",
-    #     f"output/{base}-trim{ext}"
-    # ])
-    # input_file = f"output/{base}-trim{ext}"
+    vmaf_json = f"output/vmaf-{base}-crf{crf}-preset{preset}.json"
+    output_file = f"output/{base}-crf{crf}-preset{preset}.webm"
     
     duration = subprocess.run([
         "ffprobe",
@@ -52,13 +36,22 @@ for preset, qp in settings.items():
 
     cmd = [
         "ffmpeg",
-        "-i", f"{input_file}",
-        "-c:v", "libvvenc",
-        "-preset", f"{preset}",
-        "-period", "10",
-        "-qp", f"{qp}",
-        "-c:a", "copy",
-        f"{output_file}"
+        "-y",
+        "-i", input_file,
+        "-map", "0:v:0",
+        "-map", "0:a?",
+        "-c:v", "libvpx",
+        "-crf", str(crf),
+        "-b:v", "0",
+        "-deadline", "good",
+        "-cpu-used", str(settings[preset]),
+        "-row-mt", "1",
+        "-threads", "8",
+        "-r", "60",
+        "-pix_fmt", "yuv420p",
+        "-c:a", "libopus",
+        "-b:a", "128k",
+        output_file
     ]
 
     vmaf_cmd = [
@@ -98,7 +91,7 @@ for preset, qp in settings.items():
         "input_file",
         "duration",
         "encoder",
-        "qp",
+        "crf",
         "preset",
         "encoding_time_s",
         "co2_kg",
@@ -109,7 +102,7 @@ for preset, qp in settings.items():
         file_name,
         duration,
         "libvvenc",
-        qp,
+        crf,
         preset,
         encoding_time,
         emissions,

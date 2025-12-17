@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 
-df = pd.read_csv("output/results.csv")
+df = pd.read_csv("output/results-coverage.csv")
 
 def extract_number(filename):
     match = re.search(r"(\d+)-trim", filename)
@@ -10,7 +10,7 @@ def extract_number(filename):
         return match.group(1)
     return filename
 df["video_id"] = df["input_file"].apply(extract_number)
-df["label"] = df.apply(lambda row: f"{row['video_id']}{row['preset']}{row['qp']}", axis=1)
+df["label"] = df.apply(lambda row: f"{row['video_id']}{row['preset']}{row['crf']}", axis=1)
 df = df.sort_values(by="label")
 
 plt.figure(figsize=(14, 8))
